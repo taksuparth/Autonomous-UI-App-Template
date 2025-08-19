@@ -1,4 +1,10 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { LinksFunction, LoaderFunctionArgs } from 'react-router';
 import {
   Links,
@@ -8,8 +14,9 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from 'react-router';
+import { createQueryClient } from '@/lib/query-client';
+import { useDehydratedState } from '@/hooks/use-dehydrated-state';
 import { AuthLayout } from './components/layout/AuthLayout';
-import PageLayout from './components/layout/PageLayout';
 import tailwindCss from './tailwind.css?url';
 import { isAuthenticated } from './utils/checkAuthentication';
 
@@ -31,11 +38,20 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const isUserAuthenticated = await isAuthenticated({ request });
-  return { isAuthenticated: isUserAuthenticated };
+  const queryClient = createQueryClient();
+
+  const isUserAuthenticated = await isAuthenticated({ request, queryClient });
+
+  return {
+    isAuthenticated: isUserAuthenticated,
+  };
 };
 
 export function Layout({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(() => createQueryClient());
+
+  const dehydratedState = useDehydratedState();
+
   return (
     <html lang="en">
       <head>
@@ -45,9 +61,14 @@ export function Layout({ children }: { children: ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
-        <ScrollRestoration />
-        <Scripts />
+        <QueryClientProvider client={queryClient}>
+          <HydrationBoundary state={dehydratedState}>
+            {children}
+            <ScrollRestoration />
+            <Scripts />
+          </HydrationBoundary>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
       </body>
     </html>
   );

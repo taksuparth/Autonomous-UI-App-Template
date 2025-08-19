@@ -8,9 +8,8 @@ import {
   EntityTable,
   TextCell,
 } from '~/components/organisms/entityTable';
-import {
-  Link,
-} from 'react-router';
+import { authCheckLoader } from '~/utils/authCheckLoader';
+import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -42,7 +41,7 @@ const users = [
   },
   {
     id: 'usr_4',
-    name: 'Diana Prince',
+    name: 'Diana Panty',
     email: 'diana@example.com',
     role: 'Moderator',
     status: 'Active',
@@ -81,7 +80,6 @@ const users = [
     createdAt: '2023-08-11T08:15:00Z',
   },
 ];
-
 
 // Define columns
 const userColumns: ColumnDef<{
@@ -148,6 +146,8 @@ const userColumns: ColumnDef<{
     enableHiding: false,
   },
 ];
+
+export { authCheckLoader as loader };
 
 export default function UserTable() {
   const [search, setSearch] = useState('');
