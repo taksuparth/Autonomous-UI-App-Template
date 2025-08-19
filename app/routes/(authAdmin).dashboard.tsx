@@ -1,5 +1,4 @@
-import { useMemo, useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { useState } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { ViewLayout } from '~/components/layout/ViewLayout.tsx';
 import {
@@ -9,12 +8,8 @@ import {
   EntityTable,
   TextCell,
 } from '~/components/organisms/entityTable';
-import { checkAuthentication } from '~/utils/checkAuthentication';
 import {
   Link,
-  useMatches,
-  useRouteLoaderData,
-  type LoaderFunctionArgs,
 } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -87,26 +82,6 @@ const users = [
   },
 ];
 
-const USERS_QUERY = gql`
-  query Users($take: Int, $skip: Int) {
-    users(take: $take, skip: $skip) {
-      id
-      name
-      email
-      eventPermissions {
-        event {
-          id
-          name
-          permissions {
-            scopes
-          }
-        }
-        id
-        scopes
-      }
-    }
-  }
-`;
 
 // Define columns
 const userColumns: ColumnDef<{
@@ -175,13 +150,6 @@ const userColumns: ColumnDef<{
 ];
 
 export default function UserTable() {
-  const { data, error } = useQuery(USERS_QUERY, {
-    variables: {
-      skip: 0,
-      take: 20,
-    },
-  });
-  const userData = useRouteLoaderData('routes/(authAdmin)');
   const [search, setSearch] = useState('');
 
   return (
@@ -196,7 +164,7 @@ export default function UserTable() {
       </ViewLayout.Header>
       <ViewLayout.Body>
         <EntityTable
-          data={data?.users ?? []}
+          data={users}
           columns={userColumns}
           pageSize={5}
           filtersSlot={

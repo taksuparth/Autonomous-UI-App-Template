@@ -1,5 +1,4 @@
 import { AuthLayout } from '~/components/layout/AuthLayout';
-import { EventType } from '~/gql/graphql';
 import { useCreateEventMutation } from '~/modules/event/hooks/useCreateEventMutation';
 import { checkAuthentication } from '~/utils/checkAuthentication';
 import { format } from 'date-fns';
@@ -66,36 +65,6 @@ export default function OnboardingCreateEventPage() {
                   <FormControl>
                     <Input placeholder="e.g., My Awesome Wedding" {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Event Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="w-full"
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select an event type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Object.values(EventType).map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {/* Simple capitalization for display */}
-                          {type.charAt(0) + type.slice(1).toLowerCase()}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

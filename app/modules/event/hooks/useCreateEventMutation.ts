@@ -1,24 +1,10 @@
 import { useCallback } from 'react';
-import { gql, useMutation } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  EventType,
-  type CreateEventMutation,
-  type CreateEventMutationVariables,
-} from '~/gql/graphql';
+
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
 
-const CREATE_EVENT_MUTATION = gql(`
-  #graphql
-  mutation CreateEvent($input: CreateEventInput!) {
-    createEvent(input: $input) {
-      id
-      name
-    }
-  }
-`);
 
 const createEventSchema = z.object({
   name: z.string().min(3, 'Event name must be at least 3 characters'),
@@ -28,9 +14,6 @@ const createEventSchema = z.object({
   startTime: z
     .string()
     .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
-  type: z.nativeEnum(EventType, {
-    error: 'Please select an event type.',
-  }),
 });
 
 type Inputs = z.infer<typeof createEventSchema>;
@@ -43,10 +26,11 @@ const getDefaultEventDate = () => {
 
 export function useCreateEventMutation() {
   const navigate = useNavigate();
-  const [createEvent, { loading }] = useMutation<
-    CreateEventMutation,
-    CreateEventMutationVariables
-  >(CREATE_EVENT_MUTATION);
+
+  const createEvent = useCallback(async ({variables}: {variables: {input: any}}) => {
+    // Call your mutation function here
+    return { data: variables.input }
+  }, []);
 
   const form = useForm<Inputs>({
     resolver: zodResolver(createEventSchema),
@@ -55,7 +39,6 @@ export function useCreateEventMutation() {
       name: '',
       date: getDefaultEventDate(),
       startTime: '18:30',
-      type: EventType.Wedding,
     },
   });
 
@@ -76,7 +59,6 @@ export function useCreateEventMutation() {
               name: values.name,
               date: +values.date,
               startTime: eventDate.getTime(),
-              type: values.type,
             },
           },
         });
@@ -91,8 +73,8 @@ export function useCreateEventMutation() {
         });
       }
     },
-    [navigate, createEvent, form],
+    [navigate, form],
   );
 
-  return { form, onSubmit, loading };
+  return { form, onSubmit, loading: false };
 }
