@@ -1,6 +1,10 @@
-import type { LoaderFunctionArgs } from 'react-router';
+import {
+  redirect,
+  type LoaderFunction,
+  type LoaderFunctionArgs,
+} from 'react-router';
 import { createQueryClient } from '@/lib/query-client';
-import { checkAuthentication } from './checkAuthentication';
+import { checkAuthentication, isAuthenticated } from './checkAuthentication';
 
 export async function authCheckLoader({ request }: LoaderFunctionArgs) {
   const queryClient = createQueryClient();
@@ -8,3 +12,14 @@ export async function authCheckLoader({ request }: LoaderFunctionArgs) {
 
   return { user };
 }
+
+export const authPageLoader: LoaderFunction = async ({ request }) => {
+  const queryClient = createQueryClient();
+  const isUserAuthenticated = await isAuthenticated({ request, queryClient });
+
+  if (isUserAuthenticated) {
+    return redirect('/dashboard');
+  }
+
+  return {};
+};

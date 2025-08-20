@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { dehydrate, useMutation } from '@tanstack/react-query';
-import { useGoogleSignIn } from '~/hooks/useGoogleSignIn';
+import { useGoogleSignIn } from '~/modules/authentication/hooks/useGoogleSignIn';
+import { authPageLoader } from '~/utils/authCheckLoader';
 import { isAuthenticated } from '~/utils/checkAuthentication';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -28,16 +29,7 @@ const loginSchema = z.object({
   password: z.string().min(2, 'Password must be at least 8 characters'),
 });
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const queryClient = createQueryClient();
-  const isUserAuthenticated = await isAuthenticated({ request, queryClient });
-
-  if (isUserAuthenticated) {
-    return redirect('/dashboard');
-  }
-
-  return {};
-};
+export { authPageLoader as loader };
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -51,11 +43,7 @@ export default function LoginForm() {
     },
   });
 
-  const {
-    mutate: login,
-    error,
-    isPending: isLoading,
-  } = useMutation({
+  const { mutate: login, isPending: isLoading } = useMutation({
     mutationKey: ['currentUser'],
     mutationFn: async (data: { email: string; password: string }) => {
       const response = await axiosClient.post('/api/auth/login', {
@@ -81,11 +69,18 @@ export default function LoginForm() {
 
   const { handleGoogleLogin } = useGoogleSignIn();
 
+  const onSubmit = useCallback(
+    (data: Inputs) => {
+      login(data);
+    },
+    [login],
+  );
+
   return (
     <Form {...form}>
       <form
         className="mx-auto flex max-w-sm flex-col gap-6"
-        onSubmit={form.handleSubmit(login)}
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Login to your account</h1>
@@ -118,12 +113,12 @@ export default function LoginForm() {
               <FormItem>
                 <div className="flex items-center">
                   <FormLabel>Password</FormLabel>
-                  <a
-                    href="#"
+                  <Link
+                    to={`/forgot-password?email=${form.getValues('email')}`}
                     className="ml-auto text-sm underline-offset-4 hover:underline"
                   >
                     Forgot your password?
-                  </a>
+                  </Link>
                 </div>
                 <FormControl>
                   <Input type="password" {...field} />

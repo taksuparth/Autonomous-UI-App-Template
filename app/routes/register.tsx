@@ -1,4 +1,5 @@
 import { useRegistration } from '~/modules/authentication/hooks/useRegistration';
+import { authPageLoader } from '~/utils/authCheckLoader';
 import { isAuthenticated } from '~/utils/checkAuthentication';
 import type { LoaderFunction, MetaFunction } from 'react-router';
 import { Link, redirect } from 'react-router';
@@ -21,14 +22,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const queryClient = createQueryClient();
-  const isUserAuthenticated = await isAuthenticated({ request, queryClient });
-  if (isUserAuthenticated) {
-    return redirect('/dashboard');
-  }
-  return {};
-};
+export { authPageLoader as loader };
 
 export default function RegisterForm() {
   const { form, onSubmit, isSuccess } = useRegistration();

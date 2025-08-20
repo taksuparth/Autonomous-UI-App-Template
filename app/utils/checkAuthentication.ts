@@ -41,7 +41,6 @@ export const checkAuthentication = async ({
     });
 
     const user = currentUserResponse.data;
-    console.log('user', user);
 
     if (currentUserResponse.status !== 200 || !user) {
       throw redirect('/login', 302);
@@ -49,7 +48,7 @@ export const checkAuthentication = async ({
 
     return { user: user.user };
   } catch (error) {
-    console.log('Error checking authentication:', error);
+    console.error('Unauthorized:', (error as Error)?.message);
     throw redirect('/login', 302);
   }
 };
