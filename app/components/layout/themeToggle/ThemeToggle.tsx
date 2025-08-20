@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 export function ModeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
 
-  console.log('resolvedTheme', resolvedTheme);
   const handleThemeToggle = React.useCallback(
     (e?: React.MouseEvent) => {
       const newMode = resolvedTheme === 'dark' ? 'light' : 'dark';
