@@ -5,6 +5,7 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useTheme } from 'next-themes';
 import type { LinksFunction, LoaderFunctionArgs } from 'react-router';
 import {
   Links,
@@ -17,6 +18,8 @@ import {
 import { createQueryClient } from '@/lib/query-client';
 import { useDehydratedState } from '@/hooks/use-dehydrated-state';
 import { AuthLayout } from './components/layout/AuthLayout';
+import ThemeProvider from './components/layout/themeToggle/ThemeProvider';
+import { ActiveThemeProvider } from './context/activeTheme';
 import tailwindCss from './tailwind.css?url';
 import { isAuthenticated } from './utils/checkAuthentication';
 
@@ -63,7 +66,15 @@ export function Layout({ children }: { children: ReactNode }) {
       <body>
         <QueryClientProvider client={queryClient}>
           <HydrationBoundary state={dehydratedState}>
-            {children}
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              enableColorScheme
+            >
+              {children}
+            </ThemeProvider>
             <ScrollRestoration />
             <Scripts />
           </HydrationBoundary>
@@ -77,11 +88,17 @@ export function Layout({ children }: { children: ReactNode }) {
 export default function App() {
   const { isAuthenticated } = useLoaderData<typeof loader>();
 
-  return isAuthenticated ? (
-    <Outlet />
-  ) : (
-    <AuthLayout>
-      <Outlet />
-    </AuthLayout>
+  const { resolvedTheme } = useTheme();
+
+  return (
+    <ActiveThemeProvider initialTheme={resolvedTheme}>
+      {isAuthenticated ? (
+        <Outlet />
+      ) : (
+        <AuthLayout>
+          <Outlet />
+        </AuthLayout>
+      )}
+    </ActiveThemeProvider>
   );
 }
