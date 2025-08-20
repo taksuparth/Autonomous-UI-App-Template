@@ -4,12 +4,13 @@ import { AppSidebar } from '@/components/app-sidebar';
 
 interface PageLayoutProps {
   children?: ReactNode;
+  user: { id: string; email: string; name: string };
 }
 
-export default function PageLayout({ children = null }: PageLayoutProps) {
+export default function PageLayout({ children = null, user }: PageLayoutProps) {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={user} />
       <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
