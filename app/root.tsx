@@ -1,9 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClientProvider,
-} from '@tanstack/react-query';
+import { HydrationBoundary, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useTheme } from 'next-themes';
 import type { LinksFunction, LoaderFunctionArgs } from 'react-router';
@@ -17,6 +13,7 @@ import {
 } from 'react-router';
 import { createQueryClient } from '@/lib/query-client';
 import { useDehydratedState } from '@/hooks/use-dehydrated-state';
+import { Toaster } from '@/components/ui/sonner';
 import { AuthLayout } from './components/layout/AuthLayout';
 import ThemeProvider from './components/layout/themeToggle/ThemeProvider';
 import { ActiveThemeProvider } from './context/activeTheme';
@@ -80,6 +77,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </HydrationBoundary>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
+        <Toaster />
       </body>
     </html>
   );

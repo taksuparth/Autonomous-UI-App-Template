@@ -1,15 +1,21 @@
 import * as React from 'react';
 import {
   AudioWaveform,
+  Bell,
   BookOpen,
   Bot,
+  CircleQuestionMark,
   Command,
   Frame,
   GalleryVerticalEnd,
   Map,
+  Monitor,
+  Palette,
   PieChart,
-  Settings2,
+  Settings,
   SquareTerminal,
+  User,
+  Wrench,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -105,29 +111,6 @@ const data = {
         },
       ],
     },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
-        },
-      ],
-    },
   ],
   projects: [
     {
@@ -146,6 +129,46 @@ const data = {
       icon: Map,
     },
   ],
+  others: [
+    {
+      title: 'Settings',
+      url: '/settings',
+      icon: Settings,
+      items: [
+        {
+          title: 'Profile',
+          icon: User,
+          url: '/settings/profile',
+        },
+        {
+          title: 'Account',
+          icon: Wrench,
+          url: '/settings/account',
+        },
+        {
+          title: 'Appearance',
+          icon: Palette,
+          url: '/settings/appearance',
+        },
+        {
+          title: 'Notifications',
+          icon: Bell,
+          url: '/settings/notifications',
+        },
+        {
+          title: 'Display',
+          icon: Monitor,
+          url: '/settings/display',
+        },
+      ],
+    },
+    {
+      title: 'Help Center',
+      url: '/help',
+      icon: CircleQuestionMark,
+      items: [],
+    },
+  ],
 };
 
 export function AppSidebar({
@@ -159,8 +182,9 @@ export function AppSidebar({
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} title="Platform" />
         <NavProjects projects={data.projects} />
+        <NavMain items={data.others} title="Others" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={props.user} />
