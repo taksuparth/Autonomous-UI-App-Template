@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { HydrationBoundary, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useTheme } from 'next-themes';
@@ -7,13 +7,21 @@ import {
   Links,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useNavigate,
+  useRouteError,
 } from 'react-router';
 import { createQueryClient } from '@/lib/query-client';
 import { useDehydratedState } from '@/hooks/use-dehydrated-state';
 import { Toaster } from '@/components/ui/sonner';
+import { ForbiddenError } from './components/atoms/errors/ForbiddenError';
+import { GeneralError } from './components/atoms/errors/GeneralError';
+import { MaintenanceError } from './components/atoms/errors/MaintainenceError';
+import { NotFoundError } from './components/atoms/errors/NotFoundError';
+import { UnauthorisedError } from './components/atoms/errors/UnauthorisedError';
 import { AuthLayout } from './components/layout/AuthLayout';
 import ThemeProvider from './components/layout/themeToggle/ThemeProvider';
 import { ActiveThemeProvider } from './context/activeTheme';
@@ -81,6 +89,32 @@ export function Layout({ children }: { children: ReactNode }) {
       </body>
     </html>
   );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError() as { status: number };
+
+  if (error.status === 401) {
+    return <ForbiddenError />;
+  }
+
+  if (error.status === 403) {
+    return <UnauthorisedError />;
+  }
+
+  if (error.status === 404) {
+    return <NotFoundError />;
+  }
+
+  if (error.status === 500) {
+    return <GeneralError />;
+  }
+
+  if (error.status === 503) {
+    return <MaintenanceError />;
+  }
+
+  return null;
 }
 
 export default function App() {
